@@ -102,3 +102,30 @@ button:active {
         margin-top: 10px; 
     }
 }
+
+.output-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px; /* Ajuste conforme necessário */
+    margin-bottom: 5px; /* Espaço antes do textarea */
+}
+
+.output-header label {
+    margin-bottom: 0; /* Remove a margem inferior padrão do label aqui */
+}
+
+.copy-button {
+    padding: 8px 12px;
+    background-color: #6c757d; /* Cor de exemplo, ajuste conforme seu tema */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+    width: 40%;
+}
+
+.copy-button:hover {
+    background-color: #5a6268;
+}

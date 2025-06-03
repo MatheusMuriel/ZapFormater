@@ -292,3 +292,28 @@ if (document.readyState === 'loading') {
 } else {
     updatePhoneFormatOptions(); // Chama imediatamente se o DOM já estiver pronto.
 }
+
+
+function copyOutput() {
+    const outputTextarea = document.getElementById('outputData');
+    const textToCopy = outputTextarea.value;
+
+    if (textToCopy) {
+        navigator.clipboard.writeText(textToCopy).then(() => {
+            // Opcional: Mudar o texto do botão ou mostrar uma notificação
+            const copyButton = document.querySelector('.copy-button'); // Ou use um ID se preferir
+            if (copyButton) {
+                const originalText = copyButton.textContent;
+                copyButton.textContent = 'Copiado!';
+                setTimeout(() => {
+                    copyButton.textContent = originalText;
+                }, 2000); // Volta ao texto original após 2 segundos
+            }
+        }).catch(err => {
+            console.error('Erro ao copiar texto: ', err);
+            alert('Erro ao copiar. Verifique o console para mais detalhes.');
+        });
+    } else {
+        alert('Nada para copiar!');
+    }
+}

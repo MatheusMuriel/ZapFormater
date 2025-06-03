@@ -45,8 +45,11 @@
 
         <button onclick="processContacts()">✨ Formatar Lista</button>
 
-        <label for="outputData">Saída Formatada:</label>
-        <textarea id="outputData" rows="10" readonly placeholder="Seus contatos formatados aparecerão aqui..."></textarea>
+        <div class="output-header">
+            <label for="outputData">Saída Formatada:</label>
+            <button onclick="copyOutput()" class="copy-button">📋 Copiar</button>
+        </div>
+        <textarea id="outputData" rows="10" readonly placeholder="Seus contatos formatados aparecerão aqui..."></textarea>        
 
         <p class="footer-note">Dica: Ajuste o "Tipo de Entrada" e "Formato de Saída" conforme sua necessidade.</p>
     </div>
