@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formatador de Lista Telefônica 📞</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>📋 Formatador de Lista Telefônica</h1>
+
+        <label for="inputData">Insira os dados (um por linha):</label>
+        <textarea id="inputData" rows="10" placeholder="Ex: João Silva (41) 99999-8888&#10;Maria 41988887777&#10;(11)22223333&#10;+55 (21) 8765-4321 Cliente VIP"></textarea>
+
+        <div class="full-width-option">
+            <label for="inputType">Tipo de Entrada:</label>
+            <select id="inputType">
+                <option value="numero_nome">Número e Nome</option>
+                <option value="somente_numero">Somente Número</option>
+            </select>
+        </div>
+
+        <div class="options-grid">
+            <div>
+                <label for="phoneFormat">Formato de Saída:</label>
+                <select id="phoneFormat">
+                    {/* As opções serão populadas por JavaScript */}
+                </select>
+            </div>
+            <div>
+                <label for="delimiter">Separador da Lista:</label>
+                <select id="delimiter">
+                    <option value="\n">Quebra de linha</option>
+                    <option value=", ">Vírgula e espaço (, )</option>
+                    <option value=";">Ponto e vírgula (;)</option>
+                    <option value=" | ">Pipe ( | )</option>
+                </select>
+            </div>
+        </div>
+
+        <button onclick="processContacts()">✨ Formatar Lista</button>
+
+        <label for="outputData">Saída Formatada:</label>
+        <textarea id="outputData" rows="10" readonly placeholder="Seus contatos formatados aparecerão aqui..."></textarea>
+
+        <p class="footer-note">Dica: Ajuste o "Tipo de Entrada" e "Formato de Saída" conforme sua necessidade.</p>
+    </div>
+
+    <script src="script.js" charset="utf-8"></script>
+</body>
+</html>
