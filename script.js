@@ -4,17 +4,18 @@ const phoneFormatSelect = document.getElementById('phoneFormat');
 // Define as opções de formato de telefone disponíveis
 const phoneFormatOptionsConfig = {
     somente_numero: [
-        { value: "DDD_NUMERO", text: "(DDD) NÚMERO (ex: (11) 987654321)" },
-        { value: "DDDNUMERO", text: "DDD NÚMERO (ex: 11 987654321)" },
-        { value: "DDD_NUM_ERO_HIFEN", text: "(DDD) NÚMERO-HIFEN (ex: (11) 98765-4321)" },
-        { value: "MAIS55_DDD_NUMERO", text: "+55 (DDD) NÚMERO (ex: +55 (11) 987654321)" },
-        { value: "MAIS55_DDD_NUM_ERO_HIFEN", text: "+55 (DDD) NÚMERO-HIFEN (ex: +55 (11) 98765-4321)" }
+        { value: "DDD_NUMERO_PARENTS_ESP", text: "(DDD) NÚMERO (ex: (11) 987654321)" },
+        { value: "DDD_NUMERO_ESP", text: "DDD NÚMERO (ex: 11 987654321)" },
+        { value: "DDDNUMERO_NOESP", text: "DDDNÚMERO (ex: 11987654321)" },
+        { value: "DDD_NUM_ERO_HIFEN_ESP", text: "(DDD) NÚMERO-HIFEN (ex: (11) 98765-4321)" },
+        { value: "MAIS55_DDD_NUMERO_ESP", text: "+55 (DDD) NÚMERO (ex: +55 (11) 987654321)" },
+        { value: "MAIS55_DDD_NUM_ERO_HIFEN_ESP", text: "+55 (DDD) NÚMERO-HIFEN (ex: +55 (11) 98765-4321)" }
     ],
     numero_nome: [
-        { value: "NOME_SEP_DDD_NUMERO", text: "Nome (DDD) NÚMERO" },
-        { value: "NOME_SEP_DDDNUMERO", text: "Nome DDD NÚMERO" },
-        { value: "NOME_SEP_DDD_NUM_ERO_HIFEN", text: "Nome (DDD) NÚMERO-HIFEN" },
-        { value: "NOME_SEP_MAIS55_DDD_NUMERO", text: "Nome +55 (DDD) NÚMERO" },
+        { value: "NOME_SEP_DDD_NUMERO_ESP", text: "Nome (DDD) NÚMERO" },
+        { value: "NOME_SEP_DDDNUMERO_ESP", text: "Nome DDD NÚMERO" },
+        { value: "NOME_SEP_DDD_NUM_ERO_HIFEN_ESP", text: "Nome (DDD) NÚMERO-HIFEN" },
+        { value: "NOME_SEP_MAIS55_DDD_NUMERO_ESP", text: "Nome +55 (DDD) NÚMERO" },
         { value: "NOME_SEP_MAIS55_DDD_NUM_ERO_HIFEN", text: "Nome +55 (DDD) NÚMERO-HIFEN" },
         { value: "DDD_NUMERO_SEP_NOME", text: "(DDD) NÚMERO - Nome" },
         { value: "DDDNUMERO_SEP_NOME", text: "DDD NÚMERO - Nome" },
@@ -101,7 +102,7 @@ function processContacts() {
                     const formattedNum = formatSinglePhoneNumber(entry.ddd, entry.numberPart, baseFormat);
                     outputLine = `${formattedNum} - ${entry.name}`;
                 } else { // Fallback se o formato não for reconhecido (não deveria acontecer)
-                    const formattedNum = formatSinglePhoneNumber(entry.ddd, entry.numberPart, "DDD_NUMERO");
+                    const formattedNum = formatSinglePhoneNumber(entry.ddd, entry.numberPart, "DDD_NUMERO_PARENTS_ESP");
                     outputLine = `${entry.name} ${formattedNum}`;
                 }
             } else if (entry.numberPart) { // Tem número mas não nome
@@ -148,8 +149,13 @@ function formatSinglePhoneNumber(ddd, numberPart, formatOption) {
     }
     
     // Determina a formatação do DDD
-    if (formatOption.includes("DDDNUMERO") || formatOption.includes("NOME_SEP_DDDNUMERO") || formatOption.includes("DDDNUMERO_SEP_NOME") ) { // Sem parênteses no DDD
-            formattedDdd = ddd ? `${ddd}` : "";
+    if (
+        formatOption.includes("DDD_NUMERO_ESP") || 
+        formatOption.includes("DDDNUMERO_NOESP") || 
+        formatOption.includes("NOME_SEP_DDDNUMERO_ESP") || 
+        formatOption.includes("DDDNUMERO_SEP_NOME") 
+    ) { // Sem parênteses no DDD
+        formattedDdd = ddd ? `${ddd}` : "";
     }
 
 
@@ -166,9 +172,15 @@ function formatSinglePhoneNumber(ddd, numberPart, formatOption) {
     
     // Monta a string final do número
     if (ddd && formattedDdd) { // Se tem DDD e ele foi formatado (não é vazio)
+        if (formatOption.includes("_NOESP")){
+            return `${prefix}${formattedDdd}${formattedNumber}`.trim();
+        }
         return `${prefix}${formattedDdd} ${formattedNumber}`.trim();
-    } else if (ddd && !formattedDdd) { // Se tem DDD mas a formatação não usa parênteses (ex: DDDNUMERO)
-            return `${prefix}${ddd} ${formattedNumber}`.trim();
+    } else if (ddd && !formattedDdd) { // Se tem DDD mas a formatação não usa parênteses (ex: DDD_NUMERO_ESP)
+        if (formatOption.includes("_NOESP")){
+            return `${prefix}${ddd}${formattedNumber}`.trim();    
+        }
+        return `${prefix}${ddd} ${formattedNumber}`.trim();
     }
     else { // Sem DDD
         return `${prefix}${formattedNumber}`.trim();
@@ -185,12 +197,21 @@ function parseLine(line, inputType) {
         numberStr = cleanPhoneNumber(line);
         name = ""; 
     } else { 
-        const phoneRegex = /(\+?\s*55\s*)?\(?\s*(\d{2})\s*\)?\s*(\d{4,5})\s*[-.\s]?\s*(\d{4})|(\d{10,11})/;
+        /**
+         * Explicação de regex 
+         * "+55": (\+?\s*55\s*)?
+         * "(43)": \(?\s*(\d{2})\s*\)?
+         * "99888": \s*(\d{4,6})\s*
+         * "-": [-.\s]?
+         * "7777": \s*(\d{4,5})|(\d{8,14})
+         */
+        const phoneRegex = /(\+?\s*55\s*)?\(?\s*(\d{2})\s*\)?\s*(\d{4,6})\s*[-.\s]?\s*(\d{4,5})|(\d{8,14})/;
         const simplePhoneRegex = /(\d{8,11})/;
 
         match = line.match(phoneRegex);
         let extractedPhoneNumberString = "";
 
+        console.log(match)
         if (match) {
             if (match[2] && match[3] && match[4]) { 
                 extractedPhoneNumberString = (match[1] || "") + match[2] + match[3] + match[4];
